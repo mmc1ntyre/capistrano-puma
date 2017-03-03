@@ -1,6 +1,6 @@
 #!/usr/bin/env puma
 
-directory '<%= current_path %>'
+directory "<%=fetch(:puma_directory)%>"
 rackup "<%=fetch(:puma_rackup)%>"
 environment '<%= fetch(:puma_env) %>'
 <% if fetch(:puma_tag) %>
