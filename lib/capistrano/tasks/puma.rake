@@ -17,6 +17,7 @@ namespace :load do
     set :puma_error_log, -> { File.join(shared_path, 'log', 'puma_error.log') }
     set :puma_init_active_record, false
     set :puma_preload_app, false
+    set :api_path, "#{current_path}/api"
 
     # Chruby, Rbenv and RVM integration
     append :chruby_map_bins, 'puma', 'pumactl'
@@ -52,7 +53,7 @@ namespace :puma do
         else
           invoke 'puma:config'
         end
-        within current_path do
+        within api_path do
           with rack_env: fetch(:puma_env) do
             execute :puma, "-C #{fetch(:puma_conf)} --daemon"
           end
@@ -65,7 +66,7 @@ namespace :puma do
     desc "#{command} puma"
     task command do
       on roles (fetch(:puma_role)) do |role|
-        within current_path do
+        within api_path do
           puma_switch_user(role) do
             with rack_env: fetch(:puma_env) do
               if test "[ -f #{fetch(:puma_pid)} ]"
@@ -90,7 +91,7 @@ namespace :puma do
     desc "#{command} puma"
     task command do
       on roles (fetch(:puma_role)) do |role|
-        within current_path do
+        within api_path do
           puma_switch_user(role) do
             with rack_env: fetch(:puma_env) do
               if test "[ -f #{fetch(:puma_pid)} ]" and test :kill, "-0 $( cat #{fetch(:puma_pid)} )"
